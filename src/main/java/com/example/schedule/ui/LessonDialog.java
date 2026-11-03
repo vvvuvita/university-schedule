@@ -86,7 +86,7 @@ public class LessonDialog {
             return null;
         });
 
-        // Заполнение полей при редактировании
+        //заполнение полей при редактировании
         if (existing != null) {
             dateTimeField.setText(existing.getDateTime().toString());
             groupField.setText(existing.getGroup());
