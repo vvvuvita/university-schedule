@@ -66,7 +66,6 @@ public class TreeVisualizerApp extends Application {
                 LocalDateTime time = LocalDateTime.parse(timeField.getText());
                 String group = groupField.getText();
 
-                // Вызываем поиск, передавая список для заполнения
                 Lesson found = tree.findNearestLessonWithPath(time, group, highlightedNodes);
 
                 if (found != null) {
@@ -160,8 +159,17 @@ public class TreeVisualizerApp extends Application {
             drawNode(node.right, x + xOffset, y + 80, xOffset / 2);
         }
 
-        // ПРОВЕРКА НА ПОДСВЕТКУ: если узел в списке, красим в золотой
-        if (highlightedNodes.contains(node)) {
+        // если узел в списке, красим в золотой
+        boolean visited = false;
+
+        for (AVLNode<LocalDateTime, Lesson> visitedNode : highlightedNodes) {
+            if (visitedNode.key.equals(node.key)) {
+                visited = true;
+                break;
+            }
+        }
+
+        if (visited) {
             gc.setFill(Color.GOLD);
             gc.setStroke(Color.ORANGE);
             gc.setLineWidth(3);
