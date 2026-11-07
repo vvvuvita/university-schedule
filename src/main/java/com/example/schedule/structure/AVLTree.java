@@ -1,12 +1,10 @@
-
 package com.example.schedule.structure;
 import com.example.schedule.model.Lesson;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
-public class AVLTree<K extends Comparable<? super K>, T>
-        implements EntityStore<K, T> {
+public class AVLTree<K extends Comparable<? super K>, T> implements EntityStore<K, T> {
 
     private AVLNode<K, T> root;
     private int size = 0;
@@ -42,9 +40,7 @@ public class AVLTree<K extends Comparable<? super K>, T>
     @Override
     public synchronized void add(K key, T value) {
         Objects.requireNonNull(key, "Ключ не может быть null");
-
         boolean keyAlreadyExists = containsKey(root, key);
-
         root = insert(root, key, value);
 
         if (!keyAlreadyExists) {
@@ -55,11 +51,9 @@ public class AVLTree<K extends Comparable<? super K>, T>
     private boolean containsKey(AVLNode<K, T> node, K key) {
         while (node != null) {
             int cmp = key.compareTo(node.key);
-
             if (cmp == 0) {
                 return true;
             }
-
             node = cmp < 0 ? node.left : node.right;
         }
 
@@ -138,7 +132,7 @@ public class AVLTree<K extends Comparable<? super K>, T>
         } else if (cmp > 0) {
             node.right = remove(node.right, key);
         } else {
-            // Узел найден.
+            // Узел найден
             if (node.left == null) {
                 return node.right;
             }
@@ -153,7 +147,7 @@ public class AVLTree<K extends Comparable<? super K>, T>
             node.key = successor.key;
             node.value = successor.value;
 
-            // Удаляем преемника без изменения size.
+            // Удаляем преемника без изменения size
             node.right = remove(node.right, successor.key);
         }
 
@@ -195,7 +189,7 @@ public class AVLTree<K extends Comparable<? super K>, T>
 
         visitedPath.add(node);
 
-        // Проверяем типы явно
+        // Проверяем типы
         Object keyObject = node.key;
         Object valueObject = node.value;
 

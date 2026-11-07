@@ -1,4 +1,3 @@
-
 package com.example.schedule.structure;
 
 import org.junit.jupiter.api.Test;
