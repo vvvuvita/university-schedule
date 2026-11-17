@@ -2,6 +2,7 @@ package com.example.schedule.model;
 
 import java.time.LocalDateTime;
 public class CancelledLesson extends Lesson {
+    private static final long serialVersionUID = 1L;
     private final String reason;
     private final LocalDateTime cancelledAt;
     public CancelledLesson(Lesson source, String reason, LocalDateTime cancelledAt) {

@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Practice extends Lesson implements Editable {
-
+    private static final long serialVersionUID = 1L;
     private String subgroup;
     public Practice() {
         super();

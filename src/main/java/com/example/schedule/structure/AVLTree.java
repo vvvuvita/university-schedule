@@ -281,6 +281,7 @@ public class AVLTree<K extends Comparable<? super K>, T> implements EntityStore<
         x.right = y;
         y.left = t2;
 
+
         updateHeight(y);
         updateHeight(x);
 
@@ -299,5 +300,31 @@ public class AVLTree<K extends Comparable<? super K>, T> implements EntityStore<
         updateHeight(y);
 
         return y;
+    }
+    public synchronized List<T> getAllValues() {
+        List<T> result = new java.util.ArrayList<>();
+        inOrderTraversal(root, result);
+        return result;
+    }
+
+    private void inOrderTraversal(AVLNode<K, T> node, List<T> result) {
+        if (node != null) {
+            inOrderTraversal(node.left, result);
+            result.add(node.value);
+            inOrderTraversal(node.right, result);
+        }
+    }
+
+    //загрузить список значений в дерево
+    public synchronized void loadAllValues(List<T> values) {
+        //очищаем текущее дерево
+        this.root = null;
+        this.size = 0;
+        //вставляем новые
+        for (T value : values) {
+            if (value instanceof com.example.schedule.model.Lesson lesson) {
+                add((K) lesson.getDateTime(), value);
+            }
+        }
     }
 }

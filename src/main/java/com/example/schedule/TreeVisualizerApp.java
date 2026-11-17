@@ -20,6 +20,12 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
+import com.example.schedule.io.serialization.BinarySerializer;
+import com.example.schedule.io.serialization.JsonSerializer;
+import com.example.schedule.io.serialization.ScheduleData;
+import com.example.schedule.io.serialization.Serializer;
+import javafx.stage.FileChooser;
+import java.io.File;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -47,9 +53,80 @@ public class TreeVisualizerApp extends Application {
     public void start(Stage stage) {
         BorderPane root = new BorderPane();
 
-        // Генерация
+        //генерим
         Button btnGenerate = new Button("Сгенерировать 100 занятий");
         Button btnClear = new Button("Очистить");
+        Button btnExport = new Button("Экспорт");
+        Button btnImport = new Button("Импорт");
+
+        //экспорт
+        btnExport.setOnAction(e -> {
+            FileChooser chooser = new FileChooser();
+            chooser.setTitle("Сохранить дерево");
+            chooser.getExtensionFilters().addAll(
+                    new FileChooser.ExtensionFilter("JSON файл", "*.json"),
+                    new FileChooser.ExtensionFilter("Бинарный файл", "*.bin")
+            );
+            File file = chooser.showSaveDialog(stage);
+
+            if (file != null) {
+                try {
+                    //забирираем данные
+                    var allValues = tree.getAllValues();
+                    ScheduleData data = new ScheduleData(allValues);
+
+                    //выбираем сериализатор
+                    Serializer<ScheduleData> serializer;
+                    if (file.getName().endsWith(".bin")) {
+                        serializer = new BinarySerializer();
+                    } else {
+                        serializer = new JsonSerializer();
+                    }
+                    serializer.save(data, file.toPath());
+                    System.out.println("Успешно сохранено в " + serializer.format());
+
+                } catch (Exception ex) {
+                    System.out.println("Ошибка сохранения: " + ex.getMessage());
+                    ex.printStackTrace();
+                }
+            }
+        });
+
+        //импорт
+        btnImport.setOnAction(e -> {
+            FileChooser chooser = new FileChooser();
+            chooser.setTitle("Загрузить дерево");
+            chooser.getExtensionFilters().addAll(
+                    new FileChooser.ExtensionFilter("Все файлы", "*.*"),
+                    new FileChooser.ExtensionFilter("JSON файл", "*.json"),
+                    new FileChooser.ExtensionFilter("Бинарный файл", "*.bin")
+            );
+            File file = chooser.showOpenDialog(stage);
+
+            if (file != null) {
+                try {
+                    Serializer<ScheduleData> serializer;
+                    if (file.getName().endsWith(".bin")) {
+                        serializer = new BinarySerializer();
+                    } else {
+                        serializer = new JsonSerializer();
+                    }
+
+                    //загружаем данные из файла
+                    ScheduleData data = serializer.load(file.toPath());
+
+                    //очищаем текущее дерево и загружаем новые данные
+                    tree.loadAllValues(data.getLessons());
+                    highlightedNodes.clear(); // Убираем подсветку
+
+                    redraw();
+                    System.out.println("Успешно загружено из " + serializer.format());
+
+                } catch (Exception ex) {
+                    System.out.println("Ошибка загрузки файла: " + ex.getMessage());
+                }
+            }
+        });
 
         btnCancel.setDisable(true);
         btnCancel.setOnAction(e -> {
@@ -63,7 +140,7 @@ public class TreeVisualizerApp extends Application {
             redraw();
         });
 
-        HBox topPanel = new HBox(10, btnGenerate, btnCancel, btnClear, progressBar);
+        HBox topPanel = new HBox(10, btnGenerate, btnCancel, btnClear, btnExport, btnImport, progressBar);
         topPanel.setPadding(new Insets(10));
 
         // ручное управление
